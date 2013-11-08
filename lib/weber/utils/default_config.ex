@@ -10,7 +10,7 @@ defmodule Weber.Config do
        certfile_path: "",
        keyfile_path: ""
       ],
-    ws: 
+    ws:
       [ws_port: 8800,
        ws_mod: :Handler
       ],
