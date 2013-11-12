@@ -18,6 +18,8 @@ defmodule Weber do
   Start weber application
   """
   def start(_type, _args) do
+    Weber.Supervisor.start_link(Weber.Supervisor, [])
+
     config = case Code.ensure_loaded?(Config) do
       true -> Config.config
       false -> Weber.DefaultConfig.config
