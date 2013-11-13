@@ -2,7 +2,10 @@ Mix.start
 Mix.env(:test)
 Mix.shell(Mix.Shell.Process)
 System.put_env("MIX_ENV", "test")
-Weber.start(:test, [])
+
+unless :erlang.whereis(:test) do
+  Weber.start(:test, [])
+end
 :application.start(:hackney)
 
 ExUnit.start

@@ -9,7 +9,7 @@ defmodule Handler.WeberReqHandler.Result do
   defrecord App,
     controller: nil,
     views: nil
-    
+
   @doc "Handle response from controller"
   def handle_result(res, controller // nil, views // nil) do
     app = App.new controller: controller, views: views

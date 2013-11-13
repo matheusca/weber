@@ -15,10 +15,6 @@ defmodule Weber.Reload do
     :gen_server.start({ :local, __MODULE__ }, __MODULE__, config, [])
   end
 
-  def stop do
-    :gen_server.call(__MODULE__, :stop)
-  end
-
   def init(config) do
     { :ok, config }
   end
@@ -32,7 +28,7 @@ defmodule Weber.Reload do
   end
 
   def handle_call(:purge_modules, _from, Config[root_path: root_path, load_modules: load_modules, load_time: load_time] = config) do
-    paths = Path.wildcard(root_path <> "/**/*.ex")
+    paths = Path.wildcard(root_path <> "/**/*.ex") -- Path.wildcard(root_path <> "/templates/**/*.ex")
     last_file_update = Enum.reduce(paths, load_time, &(last_file_reload_time(&1, &2)))
     
     if load_time == last_file_update do
@@ -46,6 +42,10 @@ defmodule Weber.Reload do
 
   def handle_call(:stop, _from, config) do
     { :stop, :normal, :ok, config }
+  end
+
+  def stop do
+    :gen_server.call(__MODULE__, :stop)
   end
 
   def handle_cast({:append_module, module, file}, Config[load_time: load_time] = config) do
@@ -69,9 +69,13 @@ defmodule Weber.Reload do
     case atom_to_binary(module) do
       "Elixir." <> _ ->
         root_path = :gen_server.call(__MODULE__, :root_path)
-        paths = Path.wildcard(root_path <> "/**/*.ex")
-        Code.unload_files paths
-        Kernel.ParallelCompiler.files(paths, [each_module: fn(file, module, _bytecode) -> add_to_config(module, file) end])
+        paths = Path.wildcard(root_path <> "/**/*.ex") -- Path.wildcard(root_path <> "/templates/**/*.ex")
+        try do
+          Kernel.ParallelCompiler.files(paths, [each_module: fn(file, module, _bytecode) -> add_to_config(module, file) end])
+        catch
+          kind, reason ->
+            :erlang.raise(kind, reason, System.stacktrace)
+        end
       _ -> :not_found
     end
   end

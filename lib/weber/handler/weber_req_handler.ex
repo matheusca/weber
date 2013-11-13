@@ -1,5 +1,4 @@
 defmodule Handler.WeberReqHandler do
-    
   @moduledoc """
     Weber http request cowboy handler.
   """
@@ -17,6 +16,7 @@ defmodule Handler.WeberReqHandler do
     cookie:   nil
 
   def init({:tcp, :http}, req, _opts) do
+    start_purge
     case :ets.lookup(:req_storage, self) do
       [] -> 
         :ets.insert(:req_storage, {self, req})
@@ -78,6 +78,17 @@ defmodule Handler.WeberReqHandler do
         result = Module.function(controller, action, 1).(getAllBinding(path, matched_path))
         # handle controller's response, see in Handler.WeberReqHandler.Result
         handle_result(result, controller, views) |> handle_request(req4, state)
+    end
+  end
+
+  def start_purge do
+    if :erlang.whereis(Weber.Supervisor) && System.get_env("MIX_ENV") != "prod" do
+      if :erlang.whereis(Weber.Reload) do
+        { :ok, root } = File.cwd
+        Weber.Reload.start(root)
+        Weber.Reload.enable
+      end
+      Weber.Reload.purge
     end
   end
 

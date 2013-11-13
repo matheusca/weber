@@ -1,6 +1,5 @@
 defmodule Weber do
   use Application.Behaviour
-
   @moduledoc """
   Main Weber module. Starts Weber application.
   """
@@ -19,11 +18,11 @@ defmodule Weber do
   """
   def start(_type, _args) do
     Weber.Supervisor.start_link(Weber.Supervisor, [])
-
     config = case Code.ensure_loaded?(Config) do
       true -> Config.config
       false -> Weber.DefaultConfig.config
     end
+
     Cowboy.start(config)
     :ets.new(:req_storage, [:named_table, :public, :set, {:keypos, 1}])
     Weber.Session.SessionManager.start_link(config)

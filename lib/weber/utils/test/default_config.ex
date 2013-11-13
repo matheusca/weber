@@ -1,7 +1,7 @@
 defmodule Weber.DefaultConfig do 
 
   def config do
-    [webserver: 
+    [webserver:
       [http_host: "localhost", 
        http_port: 8080,
        acceptors: 100,
@@ -10,7 +10,7 @@ defmodule Weber.DefaultConfig do
        certfile_path: "",
        keyfile_path: ""
       ],
-    ws: 
+    ws:
       [ws_port: 8800,
        ws_mod: :Handler
       ],

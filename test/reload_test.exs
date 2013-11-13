@@ -24,7 +24,7 @@ defmodule Weber.Reload.Test do
     assert Weber.Foo.foo == 1
     assert Bar.bar == 1
     
-    #Check if not purge yet
+    #Check if not update file yet
     assert Weber.Reload.purge == :ok
 
     File.touch!(root_path <> "/foo.ex")
