@@ -11,11 +11,10 @@ defmodule Weber.Utils do
   Get weber's config
   """
   def weber_config do
-    config = case Code.ensure_loaded?(Config) do
+    case Code.ensure_loaded?(Config) do
       true -> Config.config
       false -> Weber.DefaultConfig.config
     end
-    config
   end
 
   @doc """
