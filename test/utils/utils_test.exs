@@ -15,11 +15,11 @@ defmodule Weber.Utils.Test do
     config = 
       quote do
         def config do
-          List.keydelete(Weber.DefaultConfig.config, :session, 0)
+          [webserver: [session_manager: false]]
         end
       end
 
     Module.create Config, config, __ENV__.location
-    assert Weber.Utils.weber_config == Config.config
+    assert Weber.Utils.weber_config[:webserver] == Dict.merge(Weber.Utils.weber_config[:webserver], [session_manager: false])
   end
 end

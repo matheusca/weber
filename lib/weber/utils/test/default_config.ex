@@ -8,7 +8,8 @@ defmodule Weber.DefaultConfig do
        ssl: false,
        cacertfile_path: "",
        certfile_path: "",
-       keyfile_path: ""
+       keyfile_path: "",
+       session_manager: Weber.Session.SessionManager
       ],
     ws: 
       [ws_port: 8080,
