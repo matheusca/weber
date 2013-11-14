@@ -12,7 +12,7 @@ defmodule Weber.Utils do
   """
   def weber_config do
     case Code.ensure_loaded?(Config) do
-      true -> Config.config
+      true -> Dict.merge(Weber.DefaultConfig.config, Config.config, fn(_k, v1, v2) -> Dict.merge(v1, v2) end)
       false -> Weber.DefaultConfig.config
     end
   end
