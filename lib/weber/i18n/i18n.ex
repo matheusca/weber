@@ -1,7 +1,7 @@
 defmodule Weber.I18n do
 
   import Weber.Time
-  import Weber.Session
+  import Weber.Session.Server
 
   @doc """
   Localize UTC time now

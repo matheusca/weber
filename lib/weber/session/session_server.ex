@@ -1,4 +1,4 @@
-defmodule Weber.Session do
+defmodule Weber.Session.Server do
   
   @moduledoc """
   Weber session handler. Every process handle one use session.
@@ -73,9 +73,10 @@ defmodule Weber.Session do
     end
   end
 
+  # Private functions
   defp get_session_helper do
     cookie = get_cookie("weber")
-    
+
     case cookie do
       :undefined -> []
       _ ->

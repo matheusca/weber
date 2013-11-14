@@ -32,7 +32,7 @@ defmodule Weber.Session.SessionManager do
     {_, session_config} = :lists.keyfind(:session, 1, state.config)
     {_, max_age} = :lists.keyfind(:max_age, 1, session_config)
 
-    Weber.Session.start_link(max_age, session_id)
+    Weber.Session.Server.start_link(max_age, session_id)
 
     case :ets.match_object(:cookie_storage, {:_, pid, :_}) do
       [] ->
