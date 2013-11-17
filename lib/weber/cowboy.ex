@@ -16,7 +16,6 @@ defmodule Cowboy do
     :application.start(:ranch)
     :application.start(:cowlib)
     :application.start(:cowboy)
-        
     {:webserver, web_server_config} = :lists.keyfind(:webserver, 1, config)
     {_, _host}     = :lists.keyfind(:http_host, 1, web_server_config)
     {_, port}      = :lists.keyfind(:http_port, 1, web_server_config)
@@ -40,5 +39,11 @@ defmodule Cowboy do
       _ -> 
         {:ok, _} = :cowboy.start_http(:http, acceptors, [port: port], [env: [dispatch: dispatch]])
     end
+  end
+
+  def shutdown do
+    :cowboy.stop_listener(:http)
+    :cowboy.stop_listener(:https)
+    :ok
   end
 end
