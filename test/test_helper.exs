@@ -2,10 +2,29 @@ Mix.start
 Mix.env(:test)
 Mix.shell(Mix.Shell.Process)
 System.put_env("MIX_ENV", "test")
-Weber.start(:test, [])
 :application.start(:hackney)
 
 ExUnit.start
+
+defmodule Weber.Test.Helpers do
+
+  def use_config(changes) do
+    config = 
+      quote do
+        def config do
+          unquote(changes)
+        end
+      end
+    Module.create Config, config, __ENV__.location
+    :ok
+  end
+
+  def purge_module(module) do
+    :code.delete(module)
+    :code.purge(module)
+    :ok
+  end
+end
 
 defmodule MixHelpers do
   import ExUnit.Assertions
@@ -25,4 +44,4 @@ defmodule MixHelpers do
   def assert_directory(dir) do
     assert File.dir?(dir), "Expected #{dir} to be a directory."
   end
- end
+end
