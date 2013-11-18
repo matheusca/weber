@@ -6,11 +6,11 @@ defmodule Cowboy.Test do
     { :ok, pid } = Cowboy.start(Weber.Utils.weber_config)
 
     # Verify if cowboy's up
-    :erlang.is_process_alive(pid) == true
+    assert :erlang.is_process_alive(pid) == true
 
     # Shutdown Cowboy process
     Cowboy.shutdown
 
-    :erlang.is_process_alive(pid) == false
+    assert :erlang.is_process_alive(pid) == false
   end
 end
