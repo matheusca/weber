@@ -12,13 +12,11 @@ defmodule Handler.WeberReqHandler do
   import Handler.WeberReqHandler.Result
   import Handler.WeberReqHandler.Response
 
-  use Weber.Session
-
   defrecord State,
     cookie:   nil
 
   def init({:tcp, :http}, req, _opts) do
-    session_initialize(req)
+    Weber.Session.session_initialize(req)
     {:ok, req, {} }
   end
 
@@ -46,10 +44,11 @@ defmodule Handler.WeberReqHandler do
         try_to_find_static_resource(path, static, views, root) |> handle_result |> handle_request(req3, state)
       [{:method, _method}, {:path, matched_path}, {:controller, controller}, {:action, action}] ->
         # Session handler
-        case session_handler(weber_config, req3, root) do
-          :ok ->
+        case :ets.info(:req_storage) do
+          :undefined ->
             req4 = req3
-          {:req, req4} -> req4
+          _ ->
+            { :req, req4 } = Weber.Session.session_handler(weber_config, root, req3)
         end
 
         # get response from controller
@@ -60,8 +59,12 @@ defmodule Handler.WeberReqHandler do
   end
 
   def terminate(_reason, _req, _state) do
-    :ets.delete(:req_storage, self)
-    :ok
+    case Weber.Utils.weber_config[:webserver][:session_manager] do
+      false -> :ok
+      _ -> 
+        :ets.delete(:req_storage, self)
+        :ok
+    end
   end
 
   #
@@ -80,18 +83,6 @@ defmodule Handler.WeberReqHandler do
       [resource_name] ->
         {:file, resource_name, []}
     end
-  end
-
-  #
-  # Get accept language
-  #
-  def get_lang({:undefined, _}) do
-    :undefined
-  end
-
-  def get_lang({l, _}) do
-    [lang | _] = :string.tokens(:erlang.binary_to_list(l), ',')
-    :erlang.list_to_binary(lang)
   end
 
 end
